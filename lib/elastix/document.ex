@@ -151,6 +151,25 @@ defmodule Elastix.Document do
     |> HTTP.post(JSON.encode!(data))
   end
 
+  @spec update_matching(
+          elastic_url :: String.t(),
+          index :: String.t(),
+          data :: map,
+          query :: map,
+          query_params :: Keyword.t()
+        ) :: HTTP.resp()
+  def update_matching(
+        elastic_url,
+        index_name,
+        %{} = data,
+        %{} = query,
+        query_params \\ []
+      ) do
+    prepare_url(elastic_url, [index_name, "_update_by_query"])
+    |> HTTP.append_query_string(query_params)
+    |> HTTP.post(JSON.encode!(Map.merge(query, data)))
+  end
+
   @doc false
   def make_path(index_name, type_name, query_params) do
     "/#{index_name}/#{type_name}"
